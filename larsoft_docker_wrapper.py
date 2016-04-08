@@ -10,6 +10,10 @@ from subprocess import Popen, PIPE
 from docker import Client
 import datetime
 
+
+IMAGE = 'wghilliard/lar_test:latest'
+
+
 cli = Client(base_url='unix://var/run/docker.sock')
 preset_list =['one']
 
@@ -22,7 +26,7 @@ def dispatch(mount_point, cmd):
     #print(' '.join(['docker', 'run', '-dv', '{0}:/data'.format(mount_point), 'wghilliard/lar_test:latest', '/bin/bash', '-c', cmd]))
     #p = Popen(['docker', 'run', '-dv', '{0}:/data'.format(mount_point), 'wghilliard/lar_test:latest', '/bin/bash', '-c', cmd], shell=True, stdout=PIPE)
     #p = sp.call(['docker', 'run', '-dv', '{0}:/data'.format(mount_point), 'wghilliard/lar_test:latest', '/bin/bash', '-c', cmd], shell=True)
-    p = sp.call('docker run -dv {0}:/data wghilliard/lar_test:latest /bin/bash -c {1}'.format(mount_point, cmd), shell=True)
+    p = sp.call('docker run -dv {0}:/data {2} /bin/bash -c {1}'.format(mount_point, cmd, IMAGE), shell=True)
     return
 
 def core(mount_point, preset, cpu_count, event_count):
