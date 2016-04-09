@@ -12,7 +12,7 @@ import datetime
 
 
 IMAGE = 'wghilliard/lar_test:latest'
-
+DEBUG = False
 
 cli = Client(base_url='unix://var/run/docker.sock')
 preset_list =['one']
@@ -22,10 +22,7 @@ def get_time():
     return lol.strftime('%s')
 
 def dispatch(mount_point, cmd):
-    print(cmd)
-    #print(' '.join(['docker', 'run', '-dv', '{0}:/data'.format(mount_point), 'wghilliard/lar_test:latest', '/bin/bash', '-c', cmd]))
-    #p = Popen(['docker', 'run', '-dv', '{0}:/data'.format(mount_point), 'wghilliard/lar_test:latest', '/bin/bash', '-c', cmd], shell=True, stdout=PIPE)
-    #p = sp.call(['docker', 'run', '-dv', '{0}:/data'.format(mount_point), 'wghilliard/lar_test:latest', '/bin/bash', '-c', cmd], shell=True)
+    if DEBUG: print(cmd)
     p = sp.call('docker run -dv {0}:/data {2} /bin/bash -c {1}'.format(mount_point, cmd, IMAGE), shell=True)
     return
 
@@ -56,17 +53,7 @@ def core(mount_point, preset, cpu_count, event_count):
         for count in range(int(cpu_count)):
            cmd = '\'source /etc/lariatsoft_setup.sh && python /products/presets/{0}.py {1} {2}\''.format(preset, count, event_count)
            dispatch(mount_point, cmd)
-           #path = os.path.join(mount_point, str(count))
-           #os.mkdir(path)
-#           container_list.append(cli.create_container(image='wghilliard/lar_test:latest', command='/bin/bash',
-#                                                      volumes=[mount_point], host_config=cli.create_host_config(binds=['{0}:/data'.format(mount_point)])))
-#        print("Dispatching orders to containers...")
-#        for cont in container_list:
-#           print(cont['Id'])
-#           cli.start(cont['Id'])
-#           cli.exec_create(container=cont['Id'],cmd='source /etc/lariatsoft_setup.sh && python /products/preset/{0}.py {1} {2} &> {1}.log'.format(preset, count, event_count))
- #          sp.call('docker exec -it {0} bash -c "source /etc/lariatsoft_setup.sh && python /products/preset/{1}.py {2} {3} &> {2}.log".format(cont['Id'], preset, count, event_count))
-        print("The dogs are loose!")
+        print("The hound are loose!")
         return True
 
     except Exception as e:
