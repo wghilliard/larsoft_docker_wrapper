@@ -1,20 +1,20 @@
 __author__ = "William Hilliard"
 # Version: ASAP
 # Syntax: python larsoft_docker_wrapper.py {{mount_point}} {{preset}} {{cpu_count}} {{event_count}}
-# NOTE: Please make sure you have rw permissions for the mount_point. It's prefferable if it's empty.
+# NOTE: Please make sure you have rw permissions for the mount_point. It is prefferable for it to be empty.
 
 import sys
 import os
 import subprocess as sp
 from subprocess import Popen, PIPE
-from docker import Client
+#from docker import Client
 import datetime
 
 
-IMAGE = 'wghilliard/lar_test:latest'
+IMAGE = 'wghilliard/lariatsoft_wrapped:latest'
 DEBUG = False
 
-cli = Client(base_url='unix://var/run/docker.sock')
+#cli = Client(base_url='unix://var/run/docker.sock')
 preset_list =['one']
 
 def get_time():
@@ -23,6 +23,7 @@ def get_time():
 
 def dispatch(mount_point, cmd):
     if DEBUG: print(cmd)
+    # NOTE Need to clean up after with --rm flag.
     p = sp.call('docker run -dv {0}:/data {2} /bin/bash -c {1}'.format(mount_point, cmd, IMAGE), shell=True)
     return
 
@@ -30,9 +31,9 @@ def core(mount_point, preset, cpu_count, event_count):
 
     try:
         print("Running preliminary checks...")
-        if int(cpu_count) > int(cli.info()['NCPU']):
-           print("CPU_COUNT is set to {0} and the max is {1}.".format(cpu_count, cli.info()['NCPU']))
-           return False
+       # if int(cpu_count) > int(cli.info()['NCPU']):
+       #    print("CPU_COUNT is set to {0} and the max is {1}.".format(cpu_count, cli.info()['NCPU']))
+       #    return False
 
 #        event_per_cont = int(event_count / cpu_count)
 
@@ -46,6 +47,7 @@ def core(mount_point, preset, cpu_count, event_count):
         print("Marking territory...")
         time = get_time()
         mount_point = os.path.join(mount_point, time)
+        print('Output will be saved to {0}...'.format(mount_point))
         os.mkdir(mount_point)
         
         container_list = list()
@@ -54,6 +56,7 @@ def core(mount_point, preset, cpu_count, event_count):
            cmd = '\'source /etc/lariatsoft_setup.sh && python /products/presets/{0}.py {1} {2}\''.format(preset, count, event_count)
            dispatch(mount_point, cmd)
         print("The hound are loose!")
+        print("Use 'docker stats' to track their progress!")
         return True
 
     except Exception as e:
