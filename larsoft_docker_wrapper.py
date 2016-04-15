@@ -55,7 +55,7 @@ def core(mount_point, preset, cpu_count, event_count):
         for count in range(int(cpu_count)):
            cmd = '\'source /etc/lariatsoft_setup.sh && python /products/presets/{0}.py {1} {2}\''.format(preset, count, event_count)
            dispatch(mount_point, cmd)
-        print("The hound are loose!")
+        print("The containers are loose!")
         print("Use 'docker stats' to track their progress!")
         return True
 
